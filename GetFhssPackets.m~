@@ -1,0 +1,21 @@
+function [packets] = GetFhssPackets(packetsNum, tPacketS, bandPacketHz, fCentralHz, bandFullHz, tOffsetS, tErrStdS, fErrStdHz)
+% packets = GetFhssPackets(packetsNum, tPacketS, bandPacketHz, fCentralHz, bandFullHz, tOffsetS, tErrStdS, fErrStdHz)
+
+filtersNum = bandFullHz / bandPacketHz;
+freqsHz = randi([-filtersNum/2, filtersNum/2-1], 1, packetsNum) * bandPacketHz + fCentralHz;
+bandsHz = freqsHz + [-bandPacketHz/2 + randn(1, packetsNum) * fErrStdHz; ...
+                  +bandPacketHz/2 + randn(1, packetsNum) * fErrStdHz];
+timesNs = (tOffsetS + (0 : packetsNum-1)*tPacketS + randn(1, packetsNum) * tErrStdS) * 1e9;
+durationsNs = (tPacketS + randn(1, packetsNum) * tErrStdS) * 1e9;
+
+for i = 1 : packetsNum
+    packets(i).bandHz.min = bandsHz(1,i);
+    packets(i).bandHz.max = bandsHz(2,i);
+    packets(i).timeNs = timesNs(i);
+    packets(i).durationNs = durationsNs(i);
+end
+
+packets(randi([1, ])) = [];
+
+end
+
